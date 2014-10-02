@@ -1,0 +1,63 @@
+#ivPanelTool {
+	position: absolute;
+	border: 1px solid green;
+	z-index: 999999;
+	overflow:hidden;
+	font-size: 9pt;
+	
+	-ms-user-select: nonde;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none; 	
+}
+
+#ivPanelTool.expand {
+	width: 200px;
+	height: 300px;
+
+}
+
+#ivPanelTool.collapse {
+	height: 20px;
+	width: 200px;
+}
+
+#ivPanelTool td {
+    width: 25px;
+    height: 25px;    
+}
+
+#ivPanelTool table {
+	padding-left: 50px;
+}
+
+#ivPanelTool a {
+	display: block;
+	white-space: nowrap;
+	overflow: hidden;
+	text-decoration: none;
+	color: black;
+}
+
+#ivTitlePanel {
+	width: 100%;
+	height: 20px;
+	border: 1px solid grey;
+	cursor: move;
+}
+
+#ivTitlePanel #ivCollapseButton {
+	width: 18px;
+	height: 18px;
+	float: right;
+	border: 1px solid darkgrey;
+	background-color: darkgrey;	
+}
+
+.ivComment {
+	border: 1px solid green;
+}
+
+.ivBookmark, .ivBookmark:hover {
+	border: 1px dashed red;
+}
