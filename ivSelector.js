@@ -28,12 +28,9 @@ ivSelector.getSelectedText = function() {
 * @param el Элемент для обрамления
 **/	
 ivSelector.insertElementInRange = function(el) {
-	var range = window.getSelection().getRangeAt(0);
-	console.log(range);
-	el.appendChild(range.extractContents());
-	console.dir(el);
-	range.insertNode(el);	
-	console.log(range);
+	var range = window.getSelection().getRangeAt(0);	
+	el.appendChild(range.extractContents());	
+	range.insertNode(el);		
 }
 
 /**
@@ -90,34 +87,38 @@ ivSelector.init = function() {
 	ivSelector.color = 'red';
 	
 	ivSelector.bookmarkIndex = 0;
-	ivSelector.mainPanel = {};
-	
-	ivSelector.move = false;
-	ivSelector.moveX = 0;
-	ivSelector.moveY = 0;
-	
-	ivSelector.createPanel();
-	
-	// Корректировка позиции панели при скроллинге страницы
-	document.onscroll = function() {	
-		var panPosX = parseInt(ivSelector.mainPanel.style.left, 10),
-			panPosY = parseInt(ivSelector.mainPanel.style.top, 10),
-			panW = ivSelector.mainPanel.clientWidth,
-			panH = ivSelector.mainPanel.clientHeight;
+	if (ivSelector.mainPanel) {
+		ivSelector.mainPanel.style.display = 'block';
+	} else {
+		ivSelector.mainPanel = {};
+		
+		ivSelector.move = false;
+		ivSelector.moveX = 0;
+		ivSelector.moveY = 0;
+		
+		ivSelector.createPanel();
+		
+		// Корректировка позиции панели при скроллинге страницы
+		document.onscroll = function() {	
+			var panPosX = parseInt(ivSelector.mainPanel.style.left, 10),
+				panPosY = parseInt(ivSelector.mainPanel.style.top, 10),
+				panW = ivSelector.mainPanel.clientWidth,
+				panH = ivSelector.mainPanel.clientHeight;
 
-		if (panPosY < window.pageYOffset) {
-			ivSelector.mainPanel.style.top = window.pageYOffset + 'px';
-		}
-		if (panPosY > (window.pageYOffset + panH + 100)) {
-			ivSelector.mainPanel.style.top = panPosY - 100 + 'px';
-		}
-		if (panPosX < window.pageXOffset) {
-			ivSelector.mainPanel.style.left = window.pageXOffset + 'px';
-		}
-		/*if (panPosX > (window.pageXOffset + panW + 100)) {
-			ivSelector.mainPanel.style.left = panPosX - 100 + 'px';
-		}*/		
-	};
+			if (panPosY < window.pageYOffset) {
+				ivSelector.mainPanel.style.top = window.pageYOffset + 'px';
+			}
+			if (panPosY > (window.pageYOffset + panH + 100)) {
+				ivSelector.mainPanel.style.top = panPosY - 100 + 'px';
+			}
+			if (panPosX < window.pageXOffset) {
+				ivSelector.mainPanel.style.left = window.pageXOffset + 'px';
+			}
+			/*if (panPosX > (window.pageXOffset + panW + 100)) {
+				ivSelector.mainPanel.style.left = panPosX - 100 + 'px';
+			}*/		
+		};
+	}
 };
 
 /**
@@ -153,7 +154,6 @@ ivSelector.createPanel = function() {
 		ivSelector.collapseExpandPanel();
 	}
 	
-	titlePanel.appendChild(collapsePanel);
 	titlePanel.onmousedown = function(mouseEvt) {
 		var evt = mouseEvt || window.event/*IE*/;
 		var target = mouseEvt.target || mouseEvt.srcElement/*IE*/;
@@ -210,6 +210,7 @@ ivSelector.createPanel = function() {
 	}
 	
 	mainPanel.appendChild(titlePanel);
+	mainPanel.appendChild(collapsePanel);
 	mainPanel.appendChild(buttonAC);
 	mainPanel.appendChild(buttonABM);
 	mainPanel.appendChild(colorPanel);
