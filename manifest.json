@@ -4,14 +4,14 @@
   "version": "0.1",
   "content_scripts": [
     {
-      "matches": [ "http://*/*" ],
+      "matches": [ "*://*/*" ],
       "js": [ "ivSelector.js" ],
 	  "css": [ "ivSelector.css" ],
       "run_at": "document_start"
     }
   ],
   "permissions": [
-    "http://*/*"
+    "*://*/*"
   ],
   "browser_action": {
 	"default_icon": "off.png"

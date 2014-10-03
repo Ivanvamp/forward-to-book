@@ -1,6 +1,6 @@
 #ivPanelTool {
 	position: absolute;
-	border: 1px solid green;
+	border: 1px solid #008000;
 	z-index: 999999;
 	overflow:hidden;
 	font-size: 9pt;
@@ -36,13 +36,13 @@
 	white-space: nowrap;
 	overflow: hidden;
 	text-decoration: none;
-	color: black;
+	color: #000000;
 }
 
 #ivTitlePanel {
 	width: 89%;
 	height: 18px;
-	border: 1px solid grey;
+	border: 1px solid #808080;
 	cursor: move;
 	float: left;
 }
@@ -51,15 +51,36 @@
 	width: 18px;
 	height: 18px;
 	float: right;
-	border: 1px solid darkgrey;
-	background-color: darkgrey;	
+	border: 1px solid #a9a9a9;
+	background-color: #a9a9a9;
 	cursor: default;
 }
 
-.ivComment {
-	border: 1px solid green;
+/*   v   Комментарии  v   */
+.ivComment[data-comment] {
+    position: relative;
+    border: 1px solid #008000;
+    cursor: help;
 }
 
+.ivComment[data-comment]:hover::after {
+    content: attr(data-comment);
+    position: absolute;
+    top: 16px;
+    left: 0px;
+    min-width: 300px;
+    max-height: 200px;
+    border: 1px #aaaaaa solid;
+    border-radius: 10px;
+    background-color: #ffffcc;
+    padding: 12px;
+    color: #000000;
+    font-size: 12px;
+    z-index: 1;
+    overflow-y: auto;
+}
+/*   ^   Комментарии  ^   */
+
 .ivBookmark, .ivBookmark:hover {
-	border: 1px dashed red;
+	border: 1px dashed #ff0000;
 }

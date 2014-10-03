@@ -56,7 +56,14 @@ ivSelector.changeColorText = function(tag, color) {
 ivSelector.addComment = function(comment) {	
 	var newEl = document.createElement('span');	
 	newEl.setAttribute('class', 'ivComment');
-	newEl.setAttribute('title', comment);
+	newEl.setAttribute('data-comment', comment);
+    newEl.onclick = function() {
+        var oldComment = this.getAttribute('data-comment');
+        var newComment = prompt('Измените комментарий', oldComment);
+        if (newComment != null) {
+            this.setAttribute('data-comment', newComment);
+        }
+    }
 	ivSelector.insertElementInRange(newEl);
 }
 
