@@ -1,6 +1,7 @@
 ﻿document.addEventListener("DOMContentLoaded", function () {
 	//ivSelector.init();
-	window.ivSelector = ivSelector;	
+	window.ivSelector = ivSelector;
+    window.ivSelectorActive = false;
 });
 
 var ivSelector = {};
@@ -92,7 +93,9 @@ ivSelector.addBookmark = function(title) {
 ivSelector.init = function() {
 	ivSelector.tag = 'span';
 	ivSelector.color = 'red';
-	
+
+    window.ivSelectorActive = true;
+
 	ivSelector.bookmarkIndex = 0;
 	if (ivSelector.mainPanel) {
 		ivSelector.mainPanel.style.display = 'block';
@@ -133,6 +136,7 @@ ivSelector.init = function() {
 **/
 ivSelector.hide = function() {
 	ivSelector.mainPanel.style.display = 'none';
+    window.ivSelectorActive = false;
 }
 
 /**
@@ -152,7 +156,6 @@ ivSelector.createPanel = function() {
 	mainPanel.style.display = 'block';
 
     mainPanel.oncontextmenu = function(e) {
-        console.dir(mainPanel.style);
         if (isNaN((parseInt(mainPanel.style.opacity)))) {
             mainPanel.style.opacity = 0.75;
         }
@@ -268,3 +271,12 @@ ivSelector.createColorBlock = function() {
     }
     return colorPanel;
 }
+
+/**
+ * Обрабатывает сообщение от расширения
+ */
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.method == 'getStatus') {
+        sendResponse({data: window.ivSelectorActive, method: "status"});
+    }
+});
