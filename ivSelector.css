@@ -4,9 +4,10 @@
 	z-index: 999999;
 	overflow:hidden;
 	font-size: 9pt;
-	
-	-ms-user-select: nonde;
-	-moz-user-select: none;
+
+    background-color: #f0f0f0;
+    opacity: 1;
+
 	-webkit-user-select: none;
 	user-select: none; 	
 }

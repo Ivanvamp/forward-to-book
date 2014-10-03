@@ -60,7 +60,7 @@ ivSelector.addComment = function(comment) {
     newEl.onclick = function() {
         var oldComment = this.getAttribute('data-comment');
         var newComment = prompt('Измените комментарий', oldComment);
-        if (newComment != null) {
+        if (newComment !== null) {
             this.setAttribute('data-comment', newComment);
         }
     }
@@ -143,15 +143,28 @@ ivSelector.createPanel = function() {
 		buttonAC = document.createElement('button'),			// Кнопка для добавления комментария
 		buttonABM = document.createElement('button'),			// Кнопка для добавления закладки
 		titlePanel = document.createElement('div'),				// Заголовок панели с кнопками управления
-		collapsePanel = document.createElement('div'),			// Сворачивание/разворачивание панели
-		colorPanel = document.createElement('table');			// Панель цветов
-		
+		collapsePanel = document.createElement('div');			// Сворачивание/разворачивание панели
+
 	mainPanel.id = 'ivPanelTool';
 	mainPanel.setAttribute('class', 'expand');
 	mainPanel.style.top = window.pageYOffset + 'px';
 	mainPanel.style.left = window.innerWidth - 200 - 20 + 'px';
 	mainPanel.style.display = 'block';
-	
+
+    mainPanel.oncontextmenu = function(e) {
+        console.dir(mainPanel.style);
+        if (isNaN((parseInt(mainPanel.style.opacity)))) {
+            mainPanel.style.opacity = 0.75;
+        }
+        if (mainPanel.style.opacity <= 0.25) {
+            mainPanel.style.opacity = 1;
+        }
+        else {
+            mainPanel.style.opacity -= 0.25;
+        }
+        return false;
+    }
+
 	titlePanel.id = 'ivTitlePanel';
 	titlePanel.insertAdjacentHTML('afterbegin', 'Перетаскиваемая панель');
 	
@@ -194,33 +207,11 @@ ivSelector.createPanel = function() {
 	}	
 	
 	
-	for (var i = 0; i < 3; i++) {
-		var tr = document.createElement('tr');
-		for (var j = 0; j < 3; j++) {
-			var td = document.createElement('td'); 
-			// @todo цвета должны быть предопределы заранее и описаны в таблице стилей
-			var colorArr = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
-			td.style.backgroundColor = '#' + colorArr[Math.floor(Math.random() * 16)] + colorArr[Math.floor(Math.random() * 16)] + colorArr[Math.floor(Math.random() * 16)];
-			td.onclick = function() {
-				ivSelector.color = this.style.backgroundColor;
-				return (function () {			
-					ivSelector.changeColorText(ivSelector.tag, ivSelector.color);
-				})();				
-			}
-			// Запрещаю выделение, чтобы фокус с текста не перескакивал
-			/*td.onselectstart = function() {
-				return false;
-			}*/			
-			tr.appendChild(td);
-		}
-		colorPanel.appendChild(tr);
-	}
-	
 	mainPanel.appendChild(titlePanel);
 	mainPanel.appendChild(collapsePanel);
 	mainPanel.appendChild(buttonAC);
 	mainPanel.appendChild(buttonABM);
-	mainPanel.appendChild(colorPanel);
+	mainPanel.appendChild(ivSelector.createColorBlock());
 	ivSelector.mainPanel = mainPanel;
 	document.body.appendChild(mainPanel);
 }
@@ -234,4 +225,46 @@ ivSelector.collapseExpandPanel = function() {
 	} else {
 		ivSelector.mainPanel.setAttribute('class', 'expand');
 	}
+}
+
+/**
+ * Создает блок цветов
+ * @returns {HTMLElement}
+ */
+ivSelector.createColorBlock = function() {
+    var colorPanel = document.createElement('table');			// Панель цветов
+    for (var i = 0; i < 3; i++) {
+        var tr = document.createElement('tr');
+        for (var j = 0; j < 3; j++) {
+            var td = document.createElement('td');
+            // @todo цвета должны быть предопределы заранее и описаны в таблице стилей
+            var colorArr = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
+            td.style.backgroundColor = '#' + colorArr[Math.floor(Math.random() * 16)] + colorArr[Math.floor(Math.random() * 16)] + colorArr[Math.floor(Math.random() * 16)];
+
+            // Меняет цвет при клике
+            td.onclick = function() {
+                ivSelector.color = this.style.backgroundColor;
+                return (function () {
+                    ivSelector.changeColorText(ivSelector.tag, ivSelector.color);
+                })();
+            };
+
+            // Вызывает запрос на изменение цвета
+            td.oncontextmenu = function(e) {
+                var color = prompt('Введите новый цвет', this.style.backgroundColor);
+                if (color !== null) {
+                    this.style.backgroundColor = color;
+                }
+                e.stopPropagation();
+                return false;
+            }
+            // Запрещаю выделение, чтобы фокус с текста не перескакивал
+            /*td.onselectstart = function() {
+             return false;
+             }*/
+            tr.appendChild(td);
+        }
+        colorPanel.appendChild(tr);
+    }
+    return colorPanel;
 }
