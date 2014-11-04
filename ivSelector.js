@@ -1,28 +1,8 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
-	//ivSelector.init();
-	window.ivSelector = ivSelector;
-    window.ivSelectorActive = false;
-});
+﻿var ivSelector = {};
 
-var ivSelector = {};
-
-ivSelector.getSelectedText = function() {
-// @todo Доделать кроссбраузерность
-	var sel = window.getSelection(),
-		text = "";
-
-	if (sel.type === 'Range') {
-		// @todo Нужна обработка текст в случае вложенности тегов
-		// Если текст выделен в пределах одного блока
-		if (sel.baseNode === sel.extentNode) {
-			text = sel.baseNode.textContent.substring(sel.baseOffset, sel.extentOffset);
-		} else {
-			text = sel.baseNode.textContent.substring(sel.baseOffset, sel.baseNode.textContent.length) +
-				   sel.extentNode.textContent.substring(0, sel.extentOffset);
-		}
-	}
-	return text;
-}
+//ivSelector.init();
+window.ivSelector = ivSelector;
+window.ivSelectorActive = false;
 
 /**
 * Обрамляет выделенный текст елементом и заменяет им текст
@@ -39,14 +19,9 @@ ivSelector.insertElementInRange = function(el) {
 * @param tag Тэг обрамления
 * @param color Цвет выделения
 **/	
-ivSelector.changeColorText = function(tag, color) {	
-	var newEl = document.createElement(tag);	
-	newEl.style.backgroundColor = color;	// Это основное изменение цвета
-	// Очень не красивый код. Добавляет класс обрамляющему тегу и создает класс в таблице стилей. Тем самым цвет меняется у всех дочерних
-	//	newEl.setAttribute('class', 'newStyle');
-	//	document.styleSheets[0].deleteRule(777);
-	//	document.styleSheets[0].insertRule(".newStyle, .newStyle > * {background-color: " + color + " !important;}", 777);
-	// ----- Не подходит, т.к. меняется весь ранее выделенный текст
+ivSelector.changeColorText = function(cls) {
+	var newEl = document.createElement('ivTag');
+	newEl.setAttribute('class', cls);
 	ivSelector.insertElementInRange(newEl);
 }
 
@@ -91,9 +66,6 @@ ivSelector.addBookmark = function(title) {
 * Инициализирует инструментарий
 **/
 ivSelector.init = function() {
-	ivSelector.tag = 'span';
-	ivSelector.color = 'red';
-
     window.ivSelectorActive = true;
 
 	ivSelector.bookmarkIndex = 0;
@@ -118,8 +90,8 @@ ivSelector.init = function() {
 			if (panPosY < window.pageYOffset) {
 				ivSelector.mainPanel.style.top = window.pageYOffset + 'px';
 			}
-			if (panPosY > (window.pageYOffset + panH + 100)) {
-				ivSelector.mainPanel.style.top = panPosY - 100 + 'px';
+			if (panPosY >= (window.pageYOffset + window.innerHeight - panH)) {
+				ivSelector.mainPanel.style.top = window.pageYOffset + window.innerHeight - panH + 'px';
 			}
 			if (panPosX < window.pageXOffset) {
 				ivSelector.mainPanel.style.left = window.pageXOffset + 'px';
@@ -172,7 +144,7 @@ ivSelector.createPanel = function() {
 	titlePanel.insertAdjacentHTML('afterbegin', 'Перетаскиваемая панель');
 	
 	collapsePanel.id = 'ivCollapseButton';
-	collapsePanel.insertAdjacentHTML('afterbegin', '<>');
+	collapsePanel.textContent  = '<>';
 	collapsePanel.onclick = function() {
 		ivSelector.collapseExpandPanel();
 	}
@@ -240,31 +212,30 @@ ivSelector.createColorBlock = function() {
         var tr = document.createElement('tr');
         for (var j = 0; j < 3; j++) {
             var td = document.createElement('td');
-            // @todo цвета должны быть предопределы заранее и описаны в таблице стилей
-            var colorArr = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
-            td.style.backgroundColor = '#' + colorArr[Math.floor(Math.random() * 16)] + colorArr[Math.floor(Math.random() * 16)] + colorArr[Math.floor(Math.random() * 16)];
+            td.setAttribute('class', 'selStyle' + (j + i * 3));
 
             // Меняет цвет при клике
             td.onclick = function() {
-                ivSelector.color = this.style.backgroundColor;
+                var cls = this.getAttribute('class');
                 return (function () {
-                    ivSelector.changeColorText(ivSelector.tag, ivSelector.color);
+                    ivSelector.changeColorText(cls);
                 })();
             };
 
             // Вызывает запрос на изменение цвета
             td.oncontextmenu = function(e) {
-                var color = prompt('Введите новый цвет', this.style.backgroundColor);
+                var color = prompt('Введите новый цвет', window.getComputedStyle(this).backgroundColor);
                 if (color !== null) {
-                    this.style.backgroundColor = color;
+                    var rules = window.getMatchedCSSRules(this);
+                    for (var r = 0, len = rules.length; r < len; r++) {
+                        if (rules[r].selectorText.indexOf(this.className) > -1) {
+                            rules[r].style.backgroundColor = color;
+                        }
+                    }
                 }
                 e.stopPropagation();
                 return false;
             }
-            // Запрещаю выделение, чтобы фокус с текста не перескакивал
-            /*td.onselectstart = function() {
-             return false;
-             }*/
             tr.appendChild(td);
         }
         colorPanel.appendChild(tr);
@@ -275,8 +246,11 @@ ivSelector.createColorBlock = function() {
 /**
  * Обрабатывает сообщение от расширения
  */
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.method == 'getStatus') {
-        sendResponse({data: window.ivSelectorActive, method: "status"});
-    }
-});
+if (chrome.runtime.onMessage !== undefined) {
+    // Вешать обработчик только если это расширение Chrome
+    chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+        if (request.method == 'getStatus') {
+            sendResponse({data: window.ivSelectorActive, method: "status"});
+        }
+    });
+}

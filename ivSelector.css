@@ -85,3 +85,39 @@
 .ivBookmark, .ivBookmark:hover {
 	border: 1px dashed #ff0000;
 }
+
+.selStyle0, .selStyle0 > * {
+    background-color : #269d12;
+}
+
+.selStyle1, .selStyle1 > * {
+    background-color : #2068a6;
+}
+
+.selStyle2, .selStyle2 > * {
+    background-color : #7f31bb;
+}
+
+.selStyle3, .selStyle3 > * {
+    background-color : #cc0f75;
+}
+
+.selStyle4, .selStyle4 > * {
+    background-color : #cc0f33;
+}
+
+.selStyle5, .selStyle5 > * {
+    background-color : #609022;
+}
+
+.selStyle6, .selStyle6 > * {
+    background-color : #ed7b00;
+}
+
+.selStyle7, .selStyle7 > * {
+    background-color : #ffea00;
+}
+
+.selStyle8, .selStyle8 > * {
+    background-color : #2cd5cb;
+}
